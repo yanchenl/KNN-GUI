@@ -11,11 +11,34 @@ import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import components.GUI;
+
 public class KNN {
     public static void main(String[] args) {
+        
+        GUI gui = new GUI();
+        String inputFile1 = gui.getInput1();
+        String inputFile2 = gui.getInput2();
+        
+        while (inputFile1 == null || inputFile2 == null) {
+            try {
+                Thread.sleep(1000);
+                inputFile1 = gui.getInput1();
+                inputFile2 = gui.getInput2();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        System.out.println("Begin to run");
+        String outputFile = "IrisResult.csv";
+        
+        //inputFile1 = "IrisTrain.csv";
+        //inputFile2 = "IrisTest.csv";
+        
         int k = 3;
         // read the train file
-        ArrayList<String> trainList = getFile("IrisTrain.csv");
+        ArrayList<String> trainList = getFile(inputFile1);
         int trainSize = trainList.size() - 6;
         String trainData[][] = new String[trainSize][4];
 
@@ -25,7 +48,7 @@ public class KNN {
         }
 
         // read the test file
-        ArrayList<String> testList = getFile("IrisTest.csv");
+        ArrayList<String> testList = getFile(inputFile2);
         int testSize = testList.size() - 6;
         String testData[][] = new String[testSize][4];
         for (int i = 0; i < testSize; i++) {
@@ -56,7 +79,7 @@ public class KNN {
         }
 
         try {
-            writeToFile(testData, result);
+            writeToFile(testData, result, outputFile);
         } catch (IOException e) {
             System.out.println("File write error");
             e.printStackTrace();
@@ -65,11 +88,11 @@ public class KNN {
     }
 
     // write the result to a file
-    private static void writeToFile(String[][] testData, String[] result)
+    private static void writeToFile(String[][] testData, String[] result, String outputFile)
             throws IOException {
         // TODO Auto-generated method stub
         FileWriter fw = null;
-        fw = new FileWriter("IrisResult.csv");
+        fw = new FileWriter(outputFile);
         fw.write("Fisher's?Iris?Data\n");
         fw.write("Sepal length");
         fw.write(",");
@@ -94,7 +117,8 @@ public class KNN {
 
     // see the first k element and return the number of each species into an
     // array
-    private static int[] vote(String[][] trainData, int[] theFirstK, int k, int[] vote) {
+    private static int[] vote(String[][] trainData, int[] theFirstK, int k,
+            int[] vote) {
         for (int j = 0; j < k; j++) {
             if (trainData[theFirstK[j]][4].equals("I.?setosa")) {
                 vote[0]++;
@@ -176,11 +200,14 @@ public class KNN {
         double sum[] = new double[trainData.length];
         for (int i = 0; i < trainData.length; i++) {
             for (int j = 0; j < 4; j++) {
-                sum[i] += Math
-                        .pow(myIris[j] - Double.parseDouble(trainData[i][j]), 2);
+                sum[i] += Math.pow(
+                        myIris[j] - Double.parseDouble(trainData[i][j]), 2);
             }
             sum[i] = Math.sqrt(sum[i]);
         }
         return sum;
     }
+    
+
+    
 }
